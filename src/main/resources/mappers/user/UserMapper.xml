@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.github.howiefh.spock.dao.UserDao">
+    <resultMap id="user" type="io.github.howiefh.spock.domain.User" >
+        <result column="su_id" property="id" jdbcType="BIGINT" />
+        <result column="su_user_no" property="userNo" jdbcType="VARCHAR" />
+        <result column="su_user_name" property="userName" jdbcType="VARCHAR" />
+        <result column="su_version" property="version" jdbcType="INTEGER" />
+        <result column="su_delete_flag" property="deleteFlag" jdbcType="INTEGER" />
+        <result column="su_created_by" property="createdBy" jdbcType="VARCHAR" />
+        <result column="su_modified_by" property="modifiedBy" jdbcType="VARCHAR" />
+        <result column="su_created_date" property="createdDate" jdbcType="TIMESTAMP" />
+        <result column="su_modified_date" property="modifiedDate" jdbcType="TIMESTAMP" />
+    </resultMap>
+    <sql id="userColumns">
+        su.id AS su_id,
+        su.user_no AS su_user_no,
+        su.user_name AS su_user_name,
+        su.version AS su_version,
+        su.delete_flag AS su_delete_flag,
+        su.created_by AS su_created_by,
+        su.modified_by AS su_modified_by,
+        su.created_date AS su_created_date,
+        su.modified_date AS su_modified_date
+    </sql>
+
+    <sql id="userWhere">
+        <where>
+            <if test="userNo != null and userNo != ''">
+                AND su.user_no = #{userNo}
+            </if>
+            <if test="userName != null and userName != ''">
+                AND su.user_name = #{userName}
+            </if>
+            <if test="deleteFlag != null and deleteFlag != ''">
+                AND su.delete_flag = #{deleteFlag}
+            </if>
+            <if test="createdBy != null and createdBy != ''">
+                AND su.created_by = #{createdBy}
+            </if>
+            <if test="modifiedBy != null and modifiedBy != ''">
+                AND su.modified_by = #{modifiedBy}
+            </if>
+            AND su.delete_flag = 0
+        </where>
+    </sql>
+
+    <select id="findOne" resultMap="user">
+        SELECT
+        <include refid="userColumns"/>
+        FROM sys_user su
+        WHERE su.user_no = #{userNo}
+        AND su.delete_flag = 0
+    </select>
+
+    <select id="countBy" resultType="long">
+        SELECT count(0)
+        FROM sys_user su
+        <include refid="userWhere"/>
+    </select>
+
+    <select id="findBy" resultMap="user">
+        SELECT
+        <include refid="userColumns"/>
+        FROM sys_user su
+        <include refid="userWhere"/>
+    </select>
+
+    <select id="findPageBy" resultMap="user">
+        select
+        <include refid="userColumns" />
+        FROM sys_user su
+        <include refid="userWhere"/>
+        order by su.id DESC
+        limit #{offset}, #{rows}
+    </select>
+
+    <insert id="save">
+        INSERT INTO sys_user(
+        id,
+        user_no,
+        user_name,
+        version,
+        delete_flag,
+        created_by,
+        modified_by,
+        created_date,
+        modified_date
+        ) VALUES (
+        #{id},
+        #{userNo},
+        #{userName},
+        #{version},
+        #{deleteFlag},
+        #{createdBy},
+        #{modifiedBy},
+        now(),
+        now()
+        )
+    </insert>
+
+    <insert id="saveAll">
+        INSERT INTO sys_user(
+        id,
+        user_no,
+        user_name,
+        version,
+        delete_flag,
+        created_by,
+        modified_by,
+        created_date,
+        modified_date
+        ) VALUES
+        <foreach collection="collection" item="item" index="index" separator="," open="" close="">
+            (
+            #{item.id},
+            #{item.userNo},
+            #{item.userName},
+            #{item.version},
+            #{item.deleteFlag},
+            #{item.createdBy},
+            #{item.modifiedBy},
+            now(),
+            now()
+            )
+        </foreach>
+    </insert>
+
+    <update id="update">
+        UPDATE sys_user
+        <set>
+            <if test="userName != null and userName != ''"> user_name = #{userName},</if>
+            <if test="deleteFlag != null"> delete_flag = #{deleteFlag},</if>
+            <if test="modifiedBy != null and modifiedBy != ''"> modified_by = #{modifiedBy},</if>
+            modified_date = now(),
+            <if test="version != null"> version = version + 1,</if>
+        </set>
+        WHERE user_no = #{userNo}
+        and version = #{version}
+    </update>
+
+    <update id="delete">
+        UPDATE sys_user
+        <set>
+            <if test="version != null"> version = version + 1,</if>
+            delete_flag = #{DELETED}
+        </set>
+        WHERE user_no = #{userNo}
+        and version = #{version}
+    </update>
+</mapper>
