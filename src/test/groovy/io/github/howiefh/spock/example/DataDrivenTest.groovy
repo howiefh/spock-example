@@ -17,11 +17,8 @@
  */
 package io.github.howiefh.spock.example
 
-import groovy.json.JsonSlurper
 import groovy.sql.Sql
-import org.junit.jupiter.params.shadow.com.univocity.parsers.csv.Csv
-import org.junit.jupiter.params.shadow.com.univocity.parsers.csv.CsvParser
-import org.springframework.util.ResourceUtils
+import io.github.howiefh.spock.SpockUtils
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -68,12 +65,12 @@ class DataDrivenTest extends Specification {
         [a, b, c] << sql.rows("select a, b, c from test")
     }
 
-    def "test read csv Math.min(#a, #b) == #c"(String a, String b, String c) {
+    def "test read csv Math.min(#a, #b) == #c"(Integer a, Integer b, Integer c) {
         expect:
-        Math.min(Integer.valueOf(a), Integer.valueOf(b)) == Integer.valueOf(c)
+        Math.min(a, b) == c
 
         where:
-        [a, b, c] << new CsvParser(Csv.parseRfc4180()).parseAll(ResourceUtils.getFile("classpath:test.csv"))
+        [a, b, c] << SpockUtils.parseCsv("test.csv", Integer.&valueOf)
     }
 
     def "test read json Math.min(#a, #b) == #c"() {
@@ -81,6 +78,6 @@ class DataDrivenTest extends Specification {
         Math.min(a, b) == c
 
         where:
-        [a, b, c] << new JsonSlurper().parse(ResourceUtils.getFile("classpath:test.json"))
+        [a, b, c] << SpockUtils.parseJson("test.json")
     }
 }
