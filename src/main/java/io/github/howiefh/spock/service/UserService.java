@@ -20,11 +20,16 @@ package io.github.howiefh.spock.service;
 import io.github.howiefh.spock.dao.UserDao;
 import io.github.howiefh.spock.domain.PageInfo;
 import io.github.howiefh.spock.domain.User;
+import io.github.howiefh.spock.facade.dto.UserRegisterRequest;
 import io.github.howiefh.spock.rpc.UserAuthRpc;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.Collections;
 import java.util.List;
@@ -38,11 +43,23 @@ import java.util.List;
  */
 @Service
 @Slf4j
+@Validated
 public class UserService {
     @Autowired
     private UserDao userDao;
     @Autowired
     private UserAuthRpc userAuthRpc;
+
+    /**
+     * 注册用户.
+     *
+     * @param request
+     */
+    public String registerUser(@Valid @NotNull UserRegisterRequest request) {
+        User user = new User();
+        BeanUtils.copyProperties(request, user);
+        return registerUser(user);
+    }
 
     /**
      * 注册用户.
