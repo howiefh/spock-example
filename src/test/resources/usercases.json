@@ -1,0 +1,42 @@
+[
+{
+"scene": "用户编码为空",
+"userNo": "",
+"invitorNo": "1234",
+"userName": "子虚乌有",
+"expectedCode": 400,
+"invokeRpcTimes": 0
+},
+{
+"scene": "邀请编码为空",
+"userNo": "zixuwuyou",
+"invitorNo": "",
+"userName": "子虚乌有",
+"expectedCode": 400,
+"invokeRpcTimes": 0
+},
+{
+"scene": "用户未认证",
+"userNo": "zixuwuyou",
+"invitorNo": "1234",
+"userName": "",
+"expectedCode": 400,
+"invokeRpcTimes": 1
+},
+{
+"scene": "用户已存在",
+"userNo": "jack",
+"invitorNo": "1234",
+"userName": "杰克",
+"expectedCode": 400,
+"invokeRpcTimes": 1
+},
+{
+"scene": "正常注册",
+"userNo": "zixuwuyou",
+"invitorNo": "1234",
+"userName": "子虚乌有",
+"expectedCode": 200,
+"invokeRpcTimes": 1
+}
+]

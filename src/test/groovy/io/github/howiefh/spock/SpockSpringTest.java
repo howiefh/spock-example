@@ -37,7 +37,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @SpringBootTest(classes = Application.class, properties = {})
-@ActiveProfiles({"dev"})
+@ActiveProfiles({"h2", "sqlinit"})
 @AutoConfigureMockMvc
 @DirtiesContext
 public @interface SpockSpringTest {

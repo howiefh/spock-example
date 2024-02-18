@@ -1,7 +1,22 @@
 spring:
   profiles:
     active: dev
+  cache:
+    type: redis
+  redis:
+    host: localhost
+    port: 6379
+    password:
+    database: 0
+
+logging:
+  level:
+    # 打印SQL org.apache.ibatis.executor.BaseExecutor.getConnection
+    io.github.howiefh.spock.dao: DEBUG
+
 # mybatis
 mybatis:
   mapper-locations: classpath:mappers/**/*.xml
   type-aliases-package: io.github.howiefh.spock.domain.**.*
+  configuration:
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl

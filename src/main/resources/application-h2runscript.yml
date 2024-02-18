@@ -1,0 +1,15 @@
+#数据库连接设置
+spring:
+  datasource:
+    #配置h2数据库的连接地址
+    url: jdbc:h2:mem:testdb;MODE=MYSQL;DB_CLOSE_DELAY=-1;IGNORECASE=FALSE;DATABASE_TO_LOWER=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE;INIT=runscript from 'classpath:schema.sql'\;runscript from 'classpath:data.sql';
+    username: sa
+    password: sa
+    driver-class-name: org.h2.Driver
+  cache:
+    type: redis
+  redis:
+    host: localhost
+    port: 6379
+    password:
+    database: 0

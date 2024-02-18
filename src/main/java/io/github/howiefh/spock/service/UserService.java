@@ -17,6 +17,7 @@
  */
 package io.github.howiefh.spock.service;
 
+import io.github.howiefh.spock.cache.RedisLockService;
 import io.github.howiefh.spock.dao.UserDao;
 import io.github.howiefh.spock.domain.PageInfo;
 import io.github.howiefh.spock.domain.User;
@@ -27,12 +28,14 @@ import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
 
 /**
  * 用户服务类.
@@ -49,6 +52,8 @@ public class UserService {
     private UserDao userDao;
     @Autowired
     private UserAuthRpc userAuthRpc;
+    @Autowired
+    private RedisLockService redisLockService;
 
     /**
      * 注册用户.
@@ -67,14 +72,23 @@ public class UserService {
      * @param user
      */
     public String registerUser(User user) {
-        String name = userAuthRpc.queryAuthName(user.getUserNo());
-        if (!StringUtils.hasText(name)) {
-            throw new IllegalStateException("用户未认证");
+        Lock lock = redisLockService.getLock(user.getUserNo());
+        boolean locked = lock.tryLock();
+        if (!locked) {
+            return user.getUserNo();
         }
-        user.init();
-        user.setUserName(name);
-        userDao.save(user);
-        return user.getUserNo();
+        try {
+            String name = userAuthRpc.queryAuthName(user.getUserNo());
+            if (!StringUtils.hasText(name)) {
+                throw new IllegalStateException("用户未认证");
+            }
+            user.init();
+            user.setUserName(name);
+            userDao.save(user);
+            return user.getUserNo();
+        } finally {
+            lock.unlock();
+        }
     }
 
     /**
@@ -83,6 +97,7 @@ public class UserService {
      * @param userNo
      * @return
      */
+    @Cacheable(value = "users", key = "#userNo")
     public User queryUser(String userNo) {
         User query = new User();
         query.setUserNo(userNo);

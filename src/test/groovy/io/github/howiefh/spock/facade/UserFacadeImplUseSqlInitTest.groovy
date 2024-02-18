@@ -1,5 +1,5 @@
 /*
- * @(#)UserFacadeImplTest 1.0 2023/12/17
+ * @(#)UserFacadeImplUseSqlInitTest 1.0 2023/12/17
  *
  * Copyright 2023 Feng Hao.
  *
@@ -18,6 +18,7 @@
 package io.github.howiefh.spock.facade
 
 import io.github.howiefh.spock.SpockSpringTest
+import io.github.howiefh.spock.SpockUtils
 import io.github.howiefh.spock.facade.dto.UserRegisterRequest
 import io.github.howiefh.spock.rpc.UserAuthRpc
 import org.spockframework.spring.SpringBean
@@ -32,7 +33,7 @@ import spock.lang.*
  * @since 1.0
  */
 @SpockSpringTest
-class UserFacadeImplTest extends Specification {
+class UserFacadeImplUseSqlInitTest extends Specification {
     @Autowired
     UserFacade userFacade
 
@@ -51,11 +52,6 @@ class UserFacadeImplTest extends Specification {
         response.code == expectedCode
 
         where:
-        scene          | userNo      | invitorNo | userName   || expectedCode | invokeRpcTimes
-        "用户编码为空" | ""          | "1234"    | "子虚乌有" || 400          | 0
-        "邀请编码为空" | "zixuwuyou" | ""        | "子虚乌有" || 400          | 0
-        "用户未认证"   | "zixuwuyou" | "1234"    | ""         || 400          | 1
-        "用户已存在"   | "jack"      | "1234"    | "杰克"     || 400          | 1
-        "正常注册"     | "zixuwuyou" | "1234"    | "子虚乌有" || 200          | 1
+        [scene, userNo, invitorNo, userName, expectedCode, invokeRpcTimes] << SpockUtils.parseJson("usercases.json")
     }
 }
