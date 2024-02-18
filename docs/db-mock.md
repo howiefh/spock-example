@@ -8,7 +8,7 @@
 
 ## 引入依赖
 
-如果使用Spring Boot，只需要在pom中参考如下配置引入H2依赖。
+如果使用Spring Boot，只需要在pom中参考如下配置引入H2依赖。如未使用Spring Boot，需要自行添加最新的版本号。
 
 ```xml
 <dependency>
@@ -103,8 +103,12 @@ spring:
 - `spring.sql.init` 配置适合于在 Spring Boot 应用的启动过程中自动初始化数据库架构和数据，适用于生产、测试和开发环境。
 - `@Sql` 注解主要用于测试，通过在测试类或方法上声明，可以精确控制测试用例执行前后的数据库状态。
 
-# 遇到的问题
+# 使用H2的问题
 
 使用 H2 进行单元测试时，应当尽量保持与生产环境接近，需要注意 H2 的局限性，并适当调整测试策略和配置。
 
-简单介绍一下我在使用 H2 时遇到过一些问题及解决方案，第一个问题是不同表的索引名不能相同，建议建索引时通过表名和字段名拼接命名索引名以尽量避免索引名称重复。第二个问题是 H2 不支持if, unix_timestamp等函数，可以参考文档自定义函数：<https://www.h2database.com/html/features.html#user_defined_functions>。
+简单介绍一下我在使用 H2 时遇到过一些问题及解决方案。
+
+1. H2 的 `KEY` 或 `UNIQUE KEY` 是数据库级别而不是表级别的，因此不同表的索引名不能相同，建议建索引时通过表名和字段名拼接命名索引名以尽量避免索引名称重复。
+2. H2 不支持`date_format`, `unix_timestamp`等函数，可以参考文档自定义函数：<https://www.h2database.com/html/features.html#user_defined_functions>。示例代码：[H2CompatibilityTest](https://github.com/howiefh/spock-example/blob/master/src/test/groovy/io/github/howiefh/spock/example/H2CompatibilityTest.groovy)。
+3. H2 不支持`if`函数，可以使用 `CASE WHEN` 语句代替。
