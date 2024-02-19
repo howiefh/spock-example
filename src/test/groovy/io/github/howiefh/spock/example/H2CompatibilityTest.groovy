@@ -35,6 +35,7 @@ class H2CompatibilityTest extends Specification {
     def "test user-defined function"() {
         when:
         def sql = Sql.newInstance("jdbc:h2:mem:testcompatibility;MODE=MYSQL;DATABASE_TO_LOWER=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE;", "org.h2.Driver")
+        // 参考 org.h2.mode.FunctionsMySQL.FORMAT_REPLACE
         sql.execute('''CREATE ALIAS IF NOT EXISTS `date_format` AS '
         import java.util.Date;
         import java.text.SimpleDateFormat;
@@ -43,7 +44,7 @@ class H2CompatibilityTest extends Specification {
             if (date == null || pattern == null) {
                 return null;
             }
-            SimpleDateFormat dateFormat = new SimpleDateFormat(pattern.replace("%Y", "yyyy").replace("%m", "MM").replace("%d", "dd").replace("%H", "HH").replace("%I", "mm").replace("%s", "ss"));
+            SimpleDateFormat dateFormat = new SimpleDateFormat(pattern.replace("%Y", "yyyy").replace("%m", "MM").replace("%d", "dd").replace("%H", "HH").replace("%i", "mm").replace("%s", "ss"));
             return dateFormat.format(date);
         }
         ';''')
@@ -63,7 +64,8 @@ class H2CompatibilityTest extends Specification {
         where:
         scene                | querySql                                                 || expectedValue
         "格式化年月日"       | "select date_format(x, '%Y-%m-%d') from test_x"          || "2024-02-18"
-        "格式化年月日时分秒" | "select date_format(x, '%Y-%m-%d %H:%I:%s') from test_x" || "2024-02-18 00:00:00"
+        "格式化年月日时分秒" | "select date_format(x, '%Y-%m-%d %H:%i:%s') from test_x" || "2024-02-18 00:00:00"
+        "获取时间戳"         | "select unix_timestamp('1970-01-01 00:00:00Z')"          || 0
     }
 
 }
