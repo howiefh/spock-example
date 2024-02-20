@@ -110,9 +110,9 @@ spring:
 简单介绍一下在使用 H2 时遇到过的一些问题及解决方案。
 
 1. H2 的 `KEY` 或 `UNIQUE KEY` 是数据库级别而不是表级别的，因此不同表的索引名不能相同，建议建索引时通过表名和字段名拼接命名索引名以避免索引名称重复。
-2. H2 不支持`DATE_FORMAT`, `JSON_EXTRACT`等函数，可以参考文档自定义函数：<https://www.h2database.com/html/features.html#user_defined_functions>。示例代码：[H2CompatibilityTest](https://github.com/howiefh/spock-example/blob/fb5047392742a1e2b4db77b01429f6e9fed499ad/src/test/groovy/io/github/howiefh/spock/example/H2CompatibilityTest.groovy#L35)。
+2. H2 不支持`DATE_FORMAT`, `JSON_EXTRACT`等函数，可以参考文档自定义函数：<https://www.h2database.com/html/features.html#user_defined_functions>。示例代码：[H2CompatibilityTest](https://github.com/howiefh/spock-example/blob/7dac00001b07c97a19031eb88e3a9aa148f850b8/src/test/groovy/io/github/howiefh/spock/example/H2CompatibilityTest.groovy#L34)。
 3. H2 不支持`IF`函数，可以使用 `CASE WHEN THEN` 语句代替。
-4. 如果遇到一些特殊的 MySQL 语句，H2 不能通过上述方式支持时，可以考虑根据不同数据库执行不同SQL。使用 MyBatis 时，可以使用 [databaseIdProvider](https://mybatis.org/mybatis-3/zh_CN/configuration.html#%E6%95%B0%E6%8D%AE%E5%BA%93%E5%8E%82%E5%95%86%E6%A0%87%E8%AF%86%EF%BC%88databaseidprovider%EF%BC%89)。示例代码：[MyBatisConfiguration](https://github.com/howiefh/spock-example/blob/master/src/main/java/io/github/howiefh/spock/config/MyBatisConfiguration.java)，[UserMapper](https://github.com/howiefh/spock-example/blob/master/src/main/resources/mappers/user/UserMapper.xml)，[UserDaoTest](https://github.com/howiefh/spock-example/blob/master/src/test/groovy/io/github/howiefh/spock/dao/UserDaoTest.groovy)。
+4. 如果遇到一些特殊的 MySQL 语句，H2 不能通过上述方式支持时，可以考虑根据不同数据库执行不同SQL。使用 MyBatis 时，可以使用 [databaseIdProvider](https://mybatis.org/mybatis-3/zh_CN/configuration.html#%E6%95%B0%E6%8D%AE%E5%BA%93%E5%8E%82%E5%95%86%E6%A0%87%E8%AF%86%EF%BC%88databaseidprovider%EF%BC%89)。示例代码：[MyBatisConfiguration](https://github.com/howiefh/spock-example/blob/master/src/main/java/io/github/howiefh/spock/config/MyBatisConfiguration.java)，[UserMapper](https://github.com/howiefh/spock-example/blob/7dac00001b07c97a19031eb88e3a9aa148f850b8/src/main/resources/mappers/user/UserMapper.xml#L159)，[UserDaoTest](https://github.com/howiefh/spock-example/blob/master/src/test/groovy/io/github/howiefh/spock/dao/UserDaoTest.groovy)。
 5. 需要以表格形式查看 H2 数据库的数据时，可以通过配置 `spring.h2.console.enabled: true`，然后启动应用，在浏览器中打开 <http://localhost:8080/h2-console>。输入应用中所配置的 JDBC URL、User Name及Password，连接后即可看到数据库内容。
 
 # 总结
