@@ -1,6 +1,4 @@
 spring:
-  profiles:
-    active: dev
   cache:
     type: redis
   redis:
@@ -8,6 +6,9 @@ spring:
     port: 6379
     password:
     database: 0
+  h2:
+    console:
+      enabled: true
 
 logging:
   level:

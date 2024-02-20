@@ -5,6 +5,7 @@
         <result column="su_id" property="id" jdbcType="BIGINT" />
         <result column="su_user_no" property="userNo" jdbcType="VARCHAR" />
         <result column="su_user_name" property="userName" jdbcType="VARCHAR" />
+        <result column="su_gender" property="gender" jdbcType="INTEGER" />
         <result column="su_version" property="version" jdbcType="INTEGER" />
         <result column="su_delete_flag" property="deleteFlag" jdbcType="INTEGER" />
         <result column="su_created_by" property="createdBy" jdbcType="VARCHAR" />
@@ -16,6 +17,7 @@
         su.id AS su_id,
         su.user_no AS su_user_no,
         su.user_name AS su_user_name,
+        su.gender AS su_gender,
         su.version AS su_version,
         su.delete_flag AS su_delete_flag,
         su.created_by AS su_created_by,
@@ -32,8 +34,8 @@
             <if test="userName != null and userName != ''">
                 AND su.user_name = #{userName}
             </if>
-            <if test="deleteFlag != null and deleteFlag != ''">
-                AND su.delete_flag = #{deleteFlag}
+            <if test="gender != null">
+                AND su.gender = #{gender}
             </if>
             <if test="createdBy != null and createdBy != ''">
                 AND su.created_by = #{createdBy}
@@ -80,6 +82,7 @@
         id,
         user_no,
         user_name,
+        gender,
         version,
         delete_flag,
         created_by,
@@ -90,6 +93,7 @@
         #{id},
         #{userNo},
         #{userName},
+        #{gender},
         #{version},
         #{deleteFlag},
         #{createdBy},
@@ -104,6 +108,7 @@
         id,
         user_no,
         user_name,
+        gender,
         version,
         delete_flag,
         created_by,
@@ -116,6 +121,7 @@
             #{item.id},
             #{item.userNo},
             #{item.userName},
+            #{item.gender},
             #{item.version},
             #{item.deleteFlag},
             #{item.createdBy},
@@ -130,6 +136,7 @@
         UPDATE sys_user
         <set>
             <if test="userName != null and userName != ''"> user_name = #{userName},</if>
+            <if test="gender != null"> gender = #{gender},</if>
             <if test="deleteFlag != null"> delete_flag = #{deleteFlag},</if>
             <if test="modifiedBy != null and modifiedBy != ''"> modified_by = #{modifiedBy},</if>
             modified_date = now(),
@@ -148,4 +155,12 @@
         WHERE user_no = #{userNo}
         and version = #{version}
     </update>
+
+    <select id="statistics" resultType="io.github.howiefh.spock.domain.UserStatistics" databaseId="h2">
+        SELECT SUM(CASE gender WHEN 1 THEN 1 ELSE 0 END) as male,SUM(CASE gender WHEN 2 THEN 1 ELSE 0 END) as female FROM sys_user
+    </select>
+
+    <select id="statistics" resultType="io.github.howiefh.spock.domain.UserStatistics">
+        SELECT SUM(IF(gender = 1, 1, 0)) as male,SUM(IF(gender = 2, 1, 0)) as female FROM sys_user
+    </select>
 </mapper>

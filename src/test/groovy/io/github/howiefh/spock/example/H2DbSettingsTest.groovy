@@ -33,7 +33,7 @@ class H2DbSettingsTest extends Specification {
 
         expect:
         try {
-            def sql2 = Sql.newInstance("jdbc:h2:mem:testdbsettings;DB_CLOSE_DELAY=${dbCloseDelay}", "org.h2.Driver")
+            def sql2 = Sql.newInstance("jdbc:h2:mem:testdbsettings_dcd;DB_CLOSE_DELAY=${dbCloseDelay}", "org.h2.Driver")
             def rows2 = sql2.rows(querySql)
             sql2.close()
             rows2 == rows
@@ -49,7 +49,7 @@ class H2DbSettingsTest extends Specification {
 
     @Unroll("#scene")
     def "test IGNORECASE"() {
-        def sql = Sql.newInstance("jdbc:h2:mem:testdbsettings;IGNORECASE=${ignoreCase}", "org.h2.Driver")
+        def sql = Sql.newInstance("jdbc:h2:mem:testdbsettings_ic;IGNORECASE=${ignoreCase}", "org.h2.Driver")
         sql.execute("CREATE TABLE test_values (x VARCHAR(50));");
         sql.execute("INSERT INTO test_values (x) SELECT 'foo' x;");
 
@@ -74,7 +74,7 @@ class H2DbSettingsTest extends Specification {
     @Unroll("#scene")
     def "test DATABASE_TO_UPPER & DATABASE_TO_LOWER"() {
         when:
-        def sql = Sql.newInstance("jdbc:h2:mem:testdbsettings;DATABASE_TO_UPPER=${databaseToUpper};DATABASE_TO_LOWER=${databaseToLower}", "org.h2.Driver")
+        def sql = Sql.newInstance("jdbc:h2:mem:testdbsettings_dudl;DATABASE_TO_UPPER=${databaseToUpper};DATABASE_TO_LOWER=${databaseToLower}", "org.h2.Driver")
         sql.execute("CREATE TABLE TEST(a INT)")
         sql.execute("INSERT INTO " + table + "(" + column + ") SELECT 1;")
 
@@ -103,7 +103,7 @@ class H2DbSettingsTest extends Specification {
     @Unroll("#scene")
     def "test DATABASE_TO_UPPER & DATABASE_TO_LOWER all false syntax error"() {
         when:
-        def sql = Sql.newInstance("jdbc:h2:mem:testdbsettings;DATABASE_TO_UPPER=${databaseToUpper};DATABASE_TO_LOWER=${databaseToLower}", "org.h2.Driver")
+        def sql = Sql.newInstance("jdbc:h2:mem:testdbsettings_dudle;DATABASE_TO_UPPER=${databaseToUpper};DATABASE_TO_LOWER=${databaseToLower}", "org.h2.Driver")
         sql.execute("CREATE TABLE TEST(a INT)")
         sql.execute("INSERT INTO " + table + "(" + column + ") SELECT 1;")
 
@@ -131,7 +131,7 @@ class H2DbSettingsTest extends Specification {
     @Unroll("#scene")
     def "test DATABASE_TO_UPPER & DATABASE_TO_LOWER & CASE_INSENSITIVE_IDENTIFIERS"() {
         when:
-        def sql = Sql.newInstance("jdbc:h2:mem:testdbsettings;DATABASE_TO_UPPER=${databaseToUpper};DATABASE_TO_LOWER=${databaseToLower};CASE_INSENSITIVE_IDENTIFIERS=${caseInsensitiveIdentifiers}", "org.h2.Driver")
+        def sql = Sql.newInstance("jdbc:h2:mem:testdbsettings_dudlcii;DATABASE_TO_UPPER=${databaseToUpper};DATABASE_TO_LOWER=${databaseToLower};CASE_INSENSITIVE_IDENTIFIERS=${caseInsensitiveIdentifiers}", "org.h2.Driver")
         sql.execute("CREATE TABLE TEST(a INT)")
         sql.execute("INSERT INTO " + table + "(" + column + ") SELECT 1;")
 

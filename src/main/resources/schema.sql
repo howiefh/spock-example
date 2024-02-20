@@ -2,6 +2,7 @@ CREATE TABLE IF NOT EXISTS sys_user (
     id bigint NOT NULL AUTO_INCREMENT COMMENT '自增编号',
     user_no varchar(32) NOT NULL COMMENT '用户编号',
     user_name varchar(64) NOT NULL COMMENT '用户名称',
+    gender int COMMENT '性别 1: 男, 2: 女',
     version int NOT NULL DEFAULT '0' COMMENT '版本号',
     delete_flag int NOT NULL DEFAULT '0' COMMENT '0:未删除,1:已删除',
     created_by varchar(64) COMMENT '创建者',

@@ -18,6 +18,7 @@
 package io.github.howiefh.spock.dao;
 
 import io.github.howiefh.spock.domain.User;
+import io.github.howiefh.spock.domain.UserStatistics;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -101,4 +102,11 @@ public interface UserDao {
      * @return
      */
     int delete(User entity);
+
+    /**
+     * 统计
+     * @return
+     */
+    UserStatistics statistics();
+
 }

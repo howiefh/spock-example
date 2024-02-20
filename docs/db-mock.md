@@ -1,14 +1,14 @@
 # 前言
 
-在进行单元测试时，如果使用真实的数据库，可能会遇到多种挑战。首先是测试数据的不确定性，真实数据库的数据可能因为之前的测试操作而产生变化，这会影响到测试结果的一致性和可重复性。其次是依赖性问题，测试可能依赖于数据库的特定环境或配置，这可能导致在不同环境下测试失败。此外，真实数据库通常涉及磁盘I/O操作，这可能导致测试运行缓慢，特别是当有大量测试需要运行时，这会显著增加整体的测试时间。使用内存数据库可以有效解决这些问题：它能够保证每次测试开始时都有一个干净的数据库状态，避免了数据的不确定性；由于其独立性，减少了外部依赖和环境配置的问题；同时，内存数据库由于其高速的存取性能，可以显著提升测试的执行速度。因此，在单元测试中采用内存数据库是一种既高效又可靠的策略。
+在进行单元测试时，如果使用真实的数据库，可能会遇到多种挑战。首先是测试数据的不确定性，真实数据库的数据可能因为之前的测试操作而产生变化，这会影响到测试的一致性和可重复性。其次是依赖性问题，测试可能依赖于数据库的特定环境或配置，这可能导致在不同环境下测试失败。此外，真实数据库通常涉及I/O操作，这可能导致测试运行缓慢，特别是当有大量测试需要运行时，这会显著增加整体的测试时间。使用内存数据库可以有效解决这些问题：它能够保证每次测试开始时都有一个干净的数据库状态，避免了数据的不确定性；由于其独立性，减少了外部依赖和环境配置的问题；同时，内存数据库由于其高速的存取性能，可以显著提升测试的执行速度。因此，在单元测试中采用内存数据库是一种既高效又可靠的策略。
 
-常见的内存数据库有 H2、HSQLDB 和 Apache Derby 等。在 Java 项目中，H2 是非常受欢迎的内存数据库，经常被用于单元测试。
+常见的内存数据库有 H2、HSQLDB 和 Apache Derby 等。在 Java 项目中，H2 是非常受欢迎的内存数据库，经常被用于单元测试。（H2、HSQLDB 和 Derby的性能比较可以参考<https://www.h2database.com/html/performance.html>）
 
 # 使用
 
 ## 引入依赖
 
-如果使用Spring Boot，只需要在pom中参考如下配置引入H2依赖。如未使用Spring Boot，需要自行添加最新的版本号。
+如果使用Spring Boot，只需要在pom中参考如下配置引入H2依赖。如未使用Spring Boot，还需要自行添加最新的版本号。
 
 ```xml
 <dependency>
@@ -103,12 +103,18 @@ spring:
 - `spring.sql.init` 配置适合于在 Spring Boot 应用的启动过程中自动初始化数据库架构和数据，适用于生产、测试和开发环境。
 - `@Sql` 注解主要用于测试，通过在测试类或方法上声明，可以精确控制测试用例执行前后的数据库状态。
 
-# 使用H2的问题
+# 常见问题
 
 使用 H2 进行单元测试时，应当尽量保持与生产环境接近，需要注意 H2 的局限性，并适当调整测试策略和配置。
 
-简单介绍一下我在使用 H2 时遇到过一些问题及解决方案。
+简单介绍一下在使用 H2 时遇到过的一些问题及解决方案。
 
-1. H2 的 `KEY` 或 `UNIQUE KEY` 是数据库级别而不是表级别的，因此不同表的索引名不能相同，建议建索引时通过表名和字段名拼接命名索引名以尽量避免索引名称重复。
-2. H2 不支持`date_format`, `unix_timestamp`等函数，可以参考文档自定义函数：<https://www.h2database.com/html/features.html#user_defined_functions>。示例代码：[H2CompatibilityTest](https://github.com/howiefh/spock-example/blob/master/src/test/groovy/io/github/howiefh/spock/example/H2CompatibilityTest.groovy)。
-3. H2 不支持`if`函数，可以使用 `CASE WHEN` 语句代替。
+1. H2 的 `KEY` 或 `UNIQUE KEY` 是数据库级别而不是表级别的，因此不同表的索引名不能相同，建议建索引时通过表名和字段名拼接命名索引名以避免索引名称重复。
+2. H2 不支持`DATE_FORMAT`, `JSON_EXTRACT`等函数，可以参考文档自定义函数：<https://www.h2database.com/html/features.html#user_defined_functions>。示例代码：[H2CompatibilityTest](https://github.com/howiefh/spock-example/blob/fb5047392742a1e2b4db77b01429f6e9fed499ad/src/test/groovy/io/github/howiefh/spock/example/H2CompatibilityTest.groovy#L35)。
+3. H2 不支持`IF`函数，可以使用 `CASE WHEN THEN` 语句代替。
+4. 如果遇到一些特殊的 MySQL 语句，H2 不能通过上述方式支持时，可以考虑根据不同数据库执行不同SQL。使用 MyBatis 时，可以使用 [databaseIdProvider](https://mybatis.org/mybatis-3/zh_CN/configuration.html#%E6%95%B0%E6%8D%AE%E5%BA%93%E5%8E%82%E5%95%86%E6%A0%87%E8%AF%86%EF%BC%88databaseidprovider%EF%BC%89)。示例代码：[MyBatisConfiguration](https://github.com/howiefh/spock-example/blob/master/src/main/java/io/github/howiefh/spock/config/MyBatisConfiguration.java)，[UserMapper](https://github.com/howiefh/spock-example/blob/master/src/main/resources/mappers/user/UserMapper.xml)，[UserDaoTest](https://github.com/howiefh/spock-example/blob/master/src/test/groovy/io/github/howiefh/spock/dao/UserDaoTest.groovy)。
+5. 需要以表格形式查看 H2 数据库的数据时，可以通过配置 `spring.h2.console.enabled: true`，然后启动应用，在浏览器中打开 <http://localhost:8080/h2-console>。输入应用中所配置的 JDBC URL、User Name及Password，连接后即可看到数据库内容。
+
+# 总结
+
+在单元测试中采用H2内存数据库是一种高效且可靠的方式。它为测试提供了一个轻量级、快速启动的环境，能够模拟不同的数据库系统，如MySQL，能够确保测试的独立性和可重复性。通过使用JDBC URL进行适当配置，H2数据库能够为每次测试提供一个干净、隔离的状态，并在测试完成后轻松清理，这使得开发者能够在不影响现有开发或测试数据库的前提下，有效地进行数据库交互测试。因此，H2数据库可以作为一个单元测试中理想的数据库选择。

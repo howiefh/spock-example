@@ -45,6 +45,8 @@ public class User implements Serializable {
     private String userNo;
     /** 用户名称 */
     private String userName;
+    /** 性别 */
+    private Integer gender;
     /** 版本号 */
     private Integer version;
     /** 0:未删除,1:已删除 */

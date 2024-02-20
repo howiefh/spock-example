@@ -29,7 +29,7 @@ import spock.lang.Specification
  * @since 1.0
  */
 class DataDrivenTest extends Specification {
-    @Shared sql = Sql.newInstance("jdbc:h2:mem:testdb;MODE=MYSQL;IGNORECASE=FALSE", "org.h2.Driver")
+    @Shared sql = Sql.newInstance("jdbc:h2:mem:testdatadriven;MODE=MYSQL;IGNORECASE=FALSE", "org.h2.Driver")
 
     def setupSpec() {
         sql.execute('CREATE TABLE test ( a INT, b INT, c INT );')
