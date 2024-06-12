@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
  * @version 1.0
  * @since 2024/1/7
  */
-@Configuration
+//@Configuration
 public class RedisMockConfiguration {
     @Bean(initMethod = "start", destroyMethod = "stop")
     public RedisServer redisServer() {
