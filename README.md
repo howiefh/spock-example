@@ -6,3 +6,5 @@
 * [扩展](docs/extentions.md)
 * [Spring 模块](docs/spring-module.md)
 * [使用H2数据库](docs/db-mock.md)
+* [使用Redis Mock工具](docs/redis-mock.md)
+* [接入流水线](docs/pipeline.md)
